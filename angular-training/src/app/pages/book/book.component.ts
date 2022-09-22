@@ -9,6 +9,8 @@ import {ActorService} from "../../shared/services/actor.service";
 import {FormModule} from "../../components/forms/forms.module";
 import {PublishingCompanyService} from "../../shared/services/publishing-company.service";
 import {number} from "echarts";
+import {Book} from "./book";
+
 
 @Component({
   selector: 'app-book',
@@ -16,6 +18,9 @@ import {number} from "echarts";
   styleUrls: ['./book.component.scss']
 })
 export class BookComponent implements OnInit {
+
+
+   public item: Book[] | undefined;
 
     items   = [];
     page = new Page();
@@ -52,9 +57,38 @@ export class BookComponent implements OnInit {
         toTal: [''],
 
     });
+    //
+    public searchBookName(key: string): void {
+        console.log(key);
+        const results: Book[] = [];
+        // @ts-ignore
+        for (const item of this.item) {
+            if (
+                item.name.toLowerCase().indexOf(key.toLowerCase()) !== -1
+            ) {
+                results.push(item);
+            }
+        }
+        // @ts-ignore
+        this.items = results;
+        if (results.length === 0 || !key) {
+            this.items;
+        }
+    }
+@Input() a= true;
+    // @ts-ignore
+    openForm() {
+      if (this.a){
+          this.formGroup.reset();
+        this.a = false;
+      }else {
+      return this.a = true;
+      }
+    }
 
-
-
+    openForm1(){
+        this.a= false;
+    }
 
 
   constructor(
@@ -95,13 +129,13 @@ export class BookComponent implements OnInit {
     }
       listNXB = new Array();
     getFindNXBById(row: any) {
-        this.publisherService.getDetailPublishingCompany(row.id).subscribe((next: any) => {
+        this.publisherService.getDetailPublishingCompany(row).subscribe((next: any) => {
             console.log('next', next);
             this.listNXB1 = next;
             // this.listNXB=next;
             console.log(this.listNXB1)
         });
-        this.listNXB.push(this.listNXB1.filter((item: { id: any; }) => item.id === row.id));
+        this.listNXB.push(this.listNXB1.filter((item: { id: any; }) => item.id === row));
         console.log(this.listNXB)
     }
 
@@ -111,17 +145,28 @@ export class BookComponent implements OnInit {
         this.bookService.getBooks().subscribe((next: any) => {
             console.log('next', next);
             this.items = next;
+            this.item = next;
             console.log(this.items)
         });
     }
 
     edit(row:any){
       console.log('row', row);
-        this.formGroup.patchValue(row);
-        console.log(this.formGroup.getRawValue());
-        console.log(this.formGroup.getRawValue().nhaXuatBan);
-        console.log(row.nhaXuatBan.name);
-        this.formGroup.getRawValue().nhaXuatBan.setValue(row.nhaXuatBan.name);
+      this.openForm1();
+        this.formGroup.patchValue({
+            id: row.id,
+            name: row.name,
+            maSach: row.maSach,
+            nhaXuatBan: row.nhaXuatBan,
+            tacGia: row.tacGia,
+            content: row.content,
+            namxuatban: row.namxuatban,
+            mota: row.mota,
+            soLuongConLai: row.soLuongConLai,
+            soLuongDangMuon: row.soLuongDangMuon,
+            toTal: row.toTal,
+        });
+
     }
 
 
@@ -140,22 +185,15 @@ export class BookComponent implements OnInit {
         })
     }
 
+
     doSubmit() {
 
         this.formGroup.markAllAsTouched();
         console.log(this.formGroup.getRawValue());
-        this.getFindNXBById(this.formGroup.getRawValue().nhaXuatBan);
-        // console.log(this.getFindNXBById(this.formGroup.getRawValue().nhaXuatBan));
+        this.getFindNXBById(this.formGroup.getRawValue().banDoc);
         console.log(this.listNXB[0]);
-
-        // this.formGroup.getRawValue().nhaXuatBan.push(this.listNXB[0].filter((item: { id: any; }) => item.id === this.formGroup.getRawValue().nhaXuatBan));
-
-      //set value for nhaXuatBan
-
-       this.formGroup.getRawValue().nhaXuatBan=this.listNXB[0];
-        console.log(this.formGroup.getRawValue().nhaXuatBan);
-
-
+        this.formGroup.getRawValue().banDoc=this.listNXB[0];
+        console.log(this.formGroup.getRawValue().banDoc);
         if(this.formGroup.invalid){
             return;
         }
@@ -165,9 +203,9 @@ export class BookComponent implements OnInit {
                 next: () => {
                     this.toastrService.success(`Successful`);
                     this.formGroup.reset();
-                    this.getBook();
-                   console.log(this.getActor());
-                   console.log(this.getNXB());
+                    this.getBook()
+                    console.log(this.getNXB());
+                    console.log(this.getActor());
 
                 }, error: (error) => {
                     this.toastrService.error(`Failed !!!`);
@@ -175,10 +213,8 @@ export class BookComponent implements OnInit {
                 }
             })
         }else {
-            this.formGroup.getRawValue().nhaXuatBan === this.listNXB1;
-            console.log(this.formGroup.getRawValue().nhaXuatBan);
-            // this.getDetailNXB(this.formGroup.getRawValue().listNXB);
-            // console.log(this.getDetailNXB(this.formGroup.getRawValue().listNXB));
+            this.formGroup.getRawValue().banDoc === this.listNXB1;
+            console.log(this.formGroup.getRawValue().banDoc);
             this.bookService.addBook(this.formGroup.getRawValue()).subscribe({
                 next: () => {
                     this.toastrService.success(`Successful`);
@@ -186,14 +222,8 @@ export class BookComponent implements OnInit {
                     this.getBook();
                     console.log(this.listNXB1);
                     console.log(this.formGroup.getRawValue().listNXB);
-                    console.log(this.listActor1);
-                    // this.getDetailNXB(this.getNXB) ;
-                    // this.getDetailNXB(this.getNXB);
-                    // console.log(this.getDetailNXB);
-                    // console.log(this.getDetailNXB(Number(this.getNXB)));
-                    // console.log(this.listActor);
-                    // this.getDetailNXB(this.getNXB);
-                    // console.log(this.getDetailNXB(this.getNXB));
+                    console.log(this.listNXB1);
+
                 }, error: (error) => {
                     this.toastrService.error(`Failed !!!`);
                     console.error(error);
@@ -201,6 +231,5 @@ export class BookComponent implements OnInit {
             })
         }
     }
-
 
 }

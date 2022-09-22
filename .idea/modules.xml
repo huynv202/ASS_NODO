@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/ASS_NODO.iml" filepath="$PROJECT_DIR$/.idea/ASS_NODO.iml" />
+      <module fileurl="file://$PROJECT_DIR$/quanlithuvien/quanlithuvien.iml" filepath="$PROJECT_DIR$/quanlithuvien/quanlithuvien.iml" />
+    </modules>
+  </component>
+</project>

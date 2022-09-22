@@ -1,4 +1,5 @@
-<mat-expansion-panel  [expanded]="true">
+
+<mat-expansion-panel  [expanded]="true" [hidden] =a  >
     <mat-expansion-panel-header>
         <mat-panel-title>
             {{formGroup.getRawValue().id ? 'Update':'Add'}} books
@@ -119,11 +120,20 @@
 
 </mat-expansion-panel>
 <mat-expansion-panel [expanded]="true">
+    <form class="form-inline my-2 my-lg-0">
+        <input type="search" (ngModelChange)="searchBookName(key.value)" #key="ngModel" ngModel
+               name="key" id="searchName" class="form-control mr-sm-2" placeholder="Search book name..." required>
+    </form>
     <mat-expansion-panel-header>
+
         <mat-panel-title>
             {{'List of books'}}
         </mat-panel-title>
     </mat-expansion-panel-header>
+    <button class="btn btn-md btn-outline-success mg-l-2 r-0" type="button"
+            title="Thêm" (click)="openForm()">Thêm mới
+        <i class="bi bi-file-earmark-plus-fill"></i>
+    </button>
     <div class="table-responsive">
         <ngx-datatable
             [ngClass]="'material'"
@@ -138,6 +148,7 @@
             [rows]="items"
             [externalPaging]="false"
             [messages]="{emptyMessage: 'Không có dữ liệu', totalMessage: 'bản ghi'}">
+
             <ng-container *ngFor="let col of columns">
                 <ngx-datatable-column prop="{{ col.prop }}" name="{{ col.name }}" [flexGrow]="col.flexGrow">
                     <ng-template let-column="column" ngx-datatable-header-template>
